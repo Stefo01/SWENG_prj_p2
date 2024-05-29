@@ -10,11 +10,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
-    - name: Git Submodule Update
-      run: |
-       git pull --recurse-submodules
-       git submodule update --remote --recursive
+      with:
+        submodules: recursive
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y mpich libmpich-dev
