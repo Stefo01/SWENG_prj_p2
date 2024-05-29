@@ -15,6 +15,7 @@ jobs:
       run: |
        git pull --recurse-submodules
        git submodule update --remote --recursive
+       ls
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y mpich libmpich-dev
