@@ -12,8 +12,8 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y mpich libmpich-dev
+    - name: Setup MPI
+      uses: mpi4py/setup-mpi@v1 
 
     - name: Setup CMake
       uses: jwlawson/actions-setup-cmake@v1
