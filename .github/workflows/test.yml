@@ -39,10 +39,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Singularity
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y singularity-container
+          sudo apt-get install -y \
+            build-essential \
+            libseccomp-dev \
+            pkg-config \
+            squashfs-tools \
+            cryptsetup \
+            wget \
+            git
+
+      - name: Install Go
+        run: |
+          wget https://dl.google.com/go/go1.16.3.linux-amd64.tar.gz
+          sudo tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz
+          echo "export PATH=\$PATH:/usr/local/go/bin" >> $GITHUB_ENV
+          echo "export PATH=\$PATH:\$HOME/go/bin" >> $GITHUB_ENV
+          source $GITHUB_ENV
+
+      - name: Install Singularity
+        run: |
+          export VERSION=3.8.3
+          wget https://github.com/hpcng/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz
+          tar -xzf singularity-${VERSION}.tar.gz
+          cd singularity
+          ./mconfig
+          make -C builddir
+          sudo make -C builddir install
 
       - name: Build Singularity image
         run: |

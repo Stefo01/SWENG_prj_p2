@@ -26,5 +26,5 @@ From: ubuntu:20.04
     export PATH=/opt/matrix_multiplication/build:$PATH
 
 %runscript
-    # Define the run script, what should happen when the container is run mpirun -np 4
+    # Define the run script
     exec /opt/matrix_multiplication/build/test_multiplication "$@"
