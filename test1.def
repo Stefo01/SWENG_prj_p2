@@ -4,16 +4,15 @@ From: ubuntu:20.04
 %post
     apt-get update && apt-get install -y \
         cmake \
-        g++ \
-        make \
-        git \
         mpich \
         && apt-get clean
 
     mkdir -p /opt/matrix_multiplication
-    cp -r / /opt/matrix_multiplication/
+    
+    cp -r /src /opt/matrix_multiplication
+    cp -r /include /opt/matrix_multiplication
 
-    cd /opt/our_app/
+    # cpp main.cpp -o matrix_multiplication
 
     mkdir -p build && cd build
 

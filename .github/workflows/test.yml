@@ -39,10 +39,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Singularity
+      - name: Install Singularity
         run: |
-          sudo apt-get update
-          sudo apt-get install -y singularity-container
+          sudo apt-get update && sudo apt-get install -y wget build-essential libseccomp-dev pkg-config squashfs-tools cryptsetup
+          wget https://dl.google.com/go/go1.15.5.linux-amd64.tar.gz
+          sudo tar -C /usr/local -xzvf go1.15.5.linux-amd64.tar.gz
+          echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+          source ~/.bashrc
+          export VERSION=3.7.0 && \
+          wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz && \
+          tar -xzf singularity-${VERSION}.tar.gz && \
+          cd singularity && \
+          ./mconfig && \
+          make -C builddir && \
+          sudo make -C builddir install
 
       - name: Build Singularity image
         run: |
