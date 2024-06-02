@@ -1,0 +1,23 @@
+Bootstrap: localimage
+From: matrix_multiplication_im.sif
+
+%files
+    ./ /opt/matrix_multiplication/
+
+%post
+
+    export DEBIAN_FRONTEND=noninteractive
+
+    cd /opt/matrix_multiplication/
+
+    mkdir -p build && cd build
+    cmake ..
+    cmake --build .
+
+%environment
+    # Set environment variables
+    export PATH=/opt/matrix_multiplication/build:$PATH
+
+%runscript
+    # Define the run script
+    exec /opt/matrix_multiplication/build/test_multiplication "$@"
