@@ -13,11 +13,12 @@ From: matrix_multiplication_im.sif
     mkdir -p build && cd build
     cmake ..
     cmake --build .
+    cd ..
 
 %environment
     # Set environment variables
-    export PATH=/opt/matrix_multiplication/build:$PATH
+    export PATH=/opt/matrix_multiplication/:$PATH
 
 %runscript
     # Define the run script
-    exec /opt/matrix_multiplication/build/test_multiplication "$@"
+    mpirun -np 2 ./build/main "$@"
