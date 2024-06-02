@@ -1,0 +1,31 @@
+Bootstrap: library
+From: ubuntu:20.04
+
+%files
+    ./ /opt/matrix_multiplication/
+
+%post
+
+    export DEBIAN_FRONTEND=noninteractive
+
+    apt-get update && apt-get install -y \
+        mpi-default-bin \
+        cmake \
+        mpi-default-dev \
+        build-essential \
+        g++ \
+        && apt-get clean
+
+    cd /opt/matrix_multiplication/
+
+    mkdir -p build && cd build
+    cmake ..
+    cmake --build .
+
+%environment
+    # Set environment variables
+    export PATH=/opt/matrix_multiplication/:$PATH
+
+%runscript
+    # Define the run script
+    mpirun -np 2 ./build/main "$@"
