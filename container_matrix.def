@@ -19,7 +19,6 @@ From: ubuntu:20.04
     mkdir -p build && cd build
     cmake ..
     cmake --build .
-    ls
 
 %environment
     # Set environment variables
