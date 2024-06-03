@@ -1,12 +1,9 @@
 #!/bin/bash
-#SBATCH --job-name=run_matrix_mult
-#SBATCH --ntasks=1
+#SBATCH --job-name=jobMPI
 #SBATCH --time=10:00
-#SBATCH --output=output.txt
-#SBATCH --error=error.txt
+#SBATCH --ntasks=2
 
-singularity instance start matrix_multiplication.sif instance1
+export TMPDIR=$HOME/tmp
+mkdir -p $TMPDIR
 
-singularity run instance://instance1
-
-singularity instance stop instance1
+singularity run  matrix_multiplication.sif > output.txt 2> error.txt
