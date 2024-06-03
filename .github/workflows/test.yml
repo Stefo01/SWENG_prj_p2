@@ -49,18 +49,13 @@ jobs:
         run: |
           singularity build --fakeroot matrix_multiplication.sif container_matrix.def
       
-      - name: Transfer image to GALILEO100
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+      
+      - name: Transfer image and job.sh to GALILEO100
         run: |
-          eval `ssh-agent -s`
-          ssh-add -
-          scp matrix_multiplication.sif ${{ secrets.CLUSTER_USER }}
-          scp job.sh ${{ secrets.CLUSTER_USER }}
+          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' scp -o StrictHostKeyChecking=no matrix_multiplication.sif job.sh ${{ secrets.CLUSTER_USER }}:test
 
-      - name: Submit SLURM job
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Run job.sh
         run: |
-          ssh-add -
-          ssh ${{ secrets.CLUSTER_USER }} 'sbatch job.sh'
+          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' ssh -o StrictHostKeyChecking=no ${{ secrets.CLUSTER_USER }} 'sbatch job.sh'
