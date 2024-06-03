@@ -48,4 +48,3 @@ jobs:
       - name: Run singularity container
         run: |
           singularity build --fakeroot matrix_multiplication.sif container_matrix.def
-          singularity run matrix_multiplication.sif
