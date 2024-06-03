@@ -14,6 +14,7 @@ From: matrix_multiplication_im.sif
     cmake ..
     cmake --build .
     cd ..
+    ls
 
 %environment
     # Set environment variables
@@ -21,4 +22,5 @@ From: matrix_multiplication_im.sif
 
 %runscript
     # Define the run script
+    cd /opt/matrix_multiplication/
     mpirun -np 2 ./build/main "$@"
