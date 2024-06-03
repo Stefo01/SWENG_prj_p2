@@ -28,5 +28,5 @@ From: ubuntu:20.04
 %runscript
     # Define the run script
     cd /opt/matrix_multiplication/
-    ./build/main "$@"
+    mpirun -n 2 ./build/main "$@"
 
