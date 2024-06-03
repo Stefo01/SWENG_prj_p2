@@ -45,6 +45,21 @@ jobs:
         with:
           singularity-version: 3.8.3
 
-      - name: Run singularity container
+      - name: Build singularity container
         run: |
           singularity build --fakeroot matrix_multiplication.sif container_matrix.def
+      
+      - name: Transfer image to GALILEO100
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          ssh-add -
+          scp matrix_multiplication.sif ${{ secrets.CLUSTER_USER }}
+          scp job.sh ${{ secrets.CLUSTER_USER }}
+
+      - name: Submit SLURM job
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          ssh-add -
+          ssh ${{ secrets.CLUSTER_USER }} 'sbatch job.sh'
