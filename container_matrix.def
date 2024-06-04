@@ -2,31 +2,47 @@ Bootstrap: library
 From: ubuntu:20.04
 
 %files
-    ./ /opt/matrix_multiplication/
+    ./ /opt
+
+%environment
+    # Point to OMPI binaries, libraries, man pages
+    export OMPI_DIR=/opt/ompi
+    export PATH="$OMPI_DIR/bin:$PATH"
+    export LD_LIBRARY_PATH="$OMPI_DIR/lib:$LD_LIBRARY_PATH"
+    export MANPATH="$OMPI_DIR/share/man:$MANPATH"
+
 
 %post
-
+    echo "Installing required packages..."
     export DEBIAN_FRONTEND=noninteractive
+    apt-get update && apt-get install -y wget git bash gcc gfortran g++ make file cmake
 
-    apt-get update && apt-get install -y \
-        mpi-default-bin \
-        cmake \
-        mpi-default-dev \
-        build-essential \
-        && apt-get clean
+    echo "Installing Open MPI"
+    export OMPI_DIR=/opt/ompi
+    export OMPI_VERSION=4.0.5
+    export OMPI_URL="https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-$OMPI_VERSION.tar.bz2"
+    mkdir -p /tmp/ompi
+    mkdir -p /opt
+    # Download
+    cd /tmp/ompi && wget -O openmpi-$OMPI_VERSION.tar.bz2 $OMPI_URL && tar -xjf openmpi-$OMPI_VERSION.tar.bz2
+    # Compile and install
+    cd /tmp/ompi/openmpi-$OMPI_VERSION && ./configure --prefix=$OMPI_DIR && make -j8 install
 
-    cd /opt/matrix_multiplication/
+    # Set env variables so we can compile our application
+    export PATH=$OMPI_DIR/bin:$PATH
+    export LD_LIBRARY_PATH=$OMPI_DIR/lib:$LD_LIBRARY_PATH
+    export PATH=/opt/:$PATH
 
+    echo "Compiling the MPI application..."
+    ls
+    cd /opt/
+    ls
     mkdir -p build && cd build
     cmake ..
     cmake --build .
+    ls
 
-%environment
-    # Set environment variables
-    export PATH=/opt/matrix_multiplication/:$PATH
 
-%runscript
-    # Define the run script
-    cd /opt/matrix_multiplication/
-    mpirun -n 2 ./build/main "$@"
+
+
 

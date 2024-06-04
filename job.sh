@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=jobMPI
 #SBATCH --time=10:00
+#SBATCH --nodes=1
 #SBATCH --ntasks=2
 #SBATCH --partition=g100_all_serial
 
-export OMPI_MCA_btl=^vader,tcp,openib
-export HWLOC_COMPONENTS=-gl
+module load openmpi
 export TMPDIR=$HOME/tmp
 mkdir -p $TMPDIR
 
-singularity run matrix_multiplication.sif > output.txt 2> error.txt
+mpirun -n 2 singularity exec matrix_multiplication.sif /opt/build/main  "$@" > output.txt 2> error.txt
