@@ -9,4 +9,4 @@ module load openmpi
 export TMPDIR=$HOME/tmp
 mkdir -p $TMPDIR
 
-mpirun -n 2 singularity exec matrix_multiplication.sif /opt/build/main  "$@" > output.txt 2> error.txt
+mpirun -n 2 singularity exec matrix_multiplication.sif /opt/build/main  > output.txt 2> error.txt
