@@ -7,6 +7,7 @@
 
 
 module load openmpi
+export OMPI_MCA_btl=^vader,tcp,openib
 export HWLOC_COMPONENTS=-gl
 export TMPDIR=$HOME/tmp
 mkdir -p $TMPDIR
