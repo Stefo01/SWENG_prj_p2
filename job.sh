@@ -5,7 +5,9 @@
 #SBATCH --ntasks=2
 #SBATCH --partition=g100_all_serial
 
+
 module load openmpi
+export HWLOC_COMPONENTS=-gl
 export TMPDIR=$HOME/tmp
 mkdir -p $TMPDIR
 
