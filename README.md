@@ -15,9 +15,9 @@ Initially, we defined a Singularity image (building test1.def) containing only t
 For this step, we followed the instructions by transferring the container to the cluster using the scp command and verified its correct operation without errors on the cluster. We used the only Singularity image created locally, referencing the container_matrix.def file.
 We used the command 'sbatch job.sh' to run the container. The export are used to remove some warnings which appeared in the error.txt, while every #SBATCH is used to set up the job for the cluster using slurm. The two commands regarding TMPDIR are used to change the folder used by MPI, due to the fact that the standard TMPDIR folder can be accessed in the cluster account only by the user or the creator of the job, which means that the container couldn't access it and returned an error of 'Permission Denied'. 
 
-The error "No protocol defined" was solved using 'export HWLOC_COMPONENTS=-gl' from (https://github.com/open-mpi/ompi/issues/7701)
+The error "No protocol defined" was solved using `export HWLOC_COMPONENTS=-gl` from (https://github.com/open-mpi/ompi/issues/7701)
 
-The error "WARNING: There was an error initializing an OpenFabrics device." was solved using 'export OMPI_MCA_btl=^vader,tcp,openib' from (https://github.com/open-mpi/ompi/issues/10693)
+The error "WARNING: There was an error initializing an OpenFabrics device." was solved using `export OMPI_MCA_btl=^vader,tcp,openib` from (https://github.com/open-mpi/ompi/issues/10693)
 
 **Main and SecondType**
 
