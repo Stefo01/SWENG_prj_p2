@@ -12,8 +12,8 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y mpich libmpich-dev
+    - name: Setup MPI
+      uses: mpi4py/setup-mpi@v1 
 
     - name: Setup CMake
       uses: jwlawson/actions-setup-cmake@v1
@@ -32,43 +32,48 @@ jobs:
 
 
   singularity:
+    needs: build
 
     runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            libseccomp-dev \
-            pkg-config \
-            squashfs-tools \
-            cryptsetup \
-            wget \
-            git
+      - uses: eWaterCycle/setup-singularity@v7
+        with:
+          singularity-version: 3.8.3
 
-      - name: Install Go
+      - name: Build singularity container
         run: |
-          wget https://dl.google.com/go/go1.16.3.linux-amd64.tar.gz
-          sudo tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz
-          echo "export PATH=\$PATH:/usr/local/go/bin" >> $GITHUB_ENV
-          echo "export PATH=\$PATH:\$HOME/go/bin" >> $GITHUB_ENV
-          source $GITHUB_ENV
+          singularity build --fakeroot matrix_multiplication.sif container_matrix.def
+      
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+      
+      - name: Transfer image and job.sh to GALILEO100
+        run: |
+          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' scp -o StrictHostKeyChecking=no matrix_multiplication.sif job.sh ${{ secrets.CLUSTER_USER }}:/g100/home/usertrain/${{ secrets.CLUSTER_ACCOUNT_USERNAME }}
 
-      - name: Install Singularity
+      - name: Run job.sh
         run: |
-          export VERSION=3.8.3
-          wget https://github.com/hpcng/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz
-          tar -xzf singularity-${VERSION}.tar.gz
-          cd singularity
-          ./mconfig
-          make -C builddir
-          sudo make -C builddir install
+          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' ssh -o StrictHostKeyChecking=no ${{ secrets.CLUSTER_USER }} 'sbatch job.sh'
 
-      - name: Build Singularity image
+      - name: Transfer output.txt and error.txt from cluster to runner
         run: |
-          sudo singularity build matrix_multiplication.sif test1.def
+          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' scp -o StrictHostKeyChecking=no ${{ secrets.CLUSTER_USER }}:/g100/home/usertrain/${{ secrets.CLUSTER_ACCOUNT_USERNAME }}/output.txt ./output.txt
+          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' scp -o StrictHostKeyChecking=no ${{ secrets.CLUSTER_USER }}:/g100/home/usertrain/${{ secrets.CLUSTER_ACCOUNT_USERNAME }}/error.txt ./error.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: output
+          path: output.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: error
+          path: error.txt
