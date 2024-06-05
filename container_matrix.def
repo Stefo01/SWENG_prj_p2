@@ -34,13 +34,11 @@ From: ubuntu:20.04
     export PATH=/opt/:$PATH
 
     echo "Compiling the MPI application..."
-    ls
     cd /opt/
-    ls
     mkdir -p build && cd build
     cmake ..
     cmake --build .
-    ls
+
 
 
 
