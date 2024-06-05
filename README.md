@@ -1,54 +1,26 @@
-# SE4HPCproject
+## SE4HPCproject Part 2 -- Highlights of our work 
 
-## Step 2 -- From build to release and manual job execution 
+### Step 2.1
 
-Focus now on the correct implementation of the matrix multiplication you
-find in <https://github.com/SimoneReale/SE4HPC_project_part2>. This is a
-parallel implementation that uses MPI and reads the matrices to be
-multiplied from two files, matrixA.txt and matrixB.txt. In these files
-the first row contains the matrix dimensions (number of rows and
-columns), while the other rows contain the matrix itself.
+After using the repository template from https://github.com/SimoneReale/SE4HPC_project_part2, we moved on to implement the first step: **Automating the build, test and release processes**. We created a CI/CD pipeline that executes the building and testing processes whenever files are pushed or a pull request is made in the repository. You can find it under the 'Build' job in the 'test.yml' file.
 
-Your task is to perform the following steps:
+### Step 2.2
 
-**Preparation**: Use the template available here
-<https://github.com/SimoneReale/SE4HPC_project_part2> to create your own
-github repository. Add to this repository the tests you have created in
-Step1.
+**Containerizing the Application**:
 
-**Automating the build, test and release processes**: Create a CI/CD
-pipeline that, when someone pushes files in the repo, executes the
-building and testing process.
+Initially, we defined a Singularity image (building test1.def) containing only the dependencies, including the correct installation of MPI and CMake. Then, we created a second image (test2.def) where the repository files are copied, and the build process takes place within the container. This approach saved us time in creating images while we tested various Singularity commands locally. After completing the tests, we created the final file, matrix_multiplication.def, in which we included the mpirun execution within the container.
 
-**Containerizing the application**: Go through the following steps:
+**NOTE**: In the secondtype branch, we also created another implementation of the matrix_multiplication.def file that generates an image allowing the container to be executed by launching it with mpirun from outside.
 
--   Define a Singularity container descriptor for the matrix
-    multiplication program and push it in your repo.
+**Executing on the Cluster**:
 
--   Extend the created action to create a container image from your
-    description.
+For this step, we followed the instructions by transferring the container to the cluster using the scp command and verified its correct operation without errors on the cluster. We used the only Singularity image created locally, referencing the matrix_multiplication.def file.
 
-**Executing on the cluster**: Go through the following steps:
 
--   Create a job.sh file to run your containerized application. Make
-    sure that the standard output and error are mapped to txt files.
 
--   Transfer on Galileo100 your job script and the container.
+## STEP 3 -- Automating Job Submission with Containerization
 
--   Submit your job to the cluster and check whether it works correctly.
+We extended GitHub Actions by using eWaterCycle/setup-singularity@v7 to install Singularity. We built the matrix_multiplication.def file to create the reference image, which we do not download as an artifact on GitHub to save space. Next, we downloaded and used sshpass to transfer the newly built container and job.sh. We then used another command to run job.sh, which executes the container on the cluster and returns the output.txt and error.txt files, which we download and make visible as artifacts in GitHub Actions.
 
--   Push on your github repository your job.sh file and the files
-    obtained from the execution of the matrix multiplication.
-
-## Step 3 -- Automating a job submission with containerization 
-
-Extend the action you have created at step 3 to automate completely the
-process from a push on the repository to the execution of the
-containerized software on SLURM. To do so, you will have to move your
-container from the runner to the cluster. You can either use the scp
-command or you can publish your image on the Singularity registry and
-then pull it from the cluster. Don't forget to handle your secrets
-properly! You do not want to leave passwords and authentication tokens
-visible to everybody, so you will use the [secrets
-mechanism](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions?tool=cli).
+**NOTE**: The build and singularity jobs are connected by a dependency. This ensures that if additional tests are to be performed, the container is only created and executed on the cluster if and only if the built tests are successfully completed. Otherwise, it doesn't make sense to create the container and run everything on the cluster.
 
