@@ -70,10 +70,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: output
-          path: ./output.txt
+          path: output.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: error
-          path: ./error.txt
+          path: error.txt
