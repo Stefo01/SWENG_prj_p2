@@ -55,7 +55,7 @@ jobs:
       
       - name: Transfer image and job.sh to GALILEO100
         run: |
-          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' scp -o StrictHostKeyChecking=no matrix_multiplication.sif job.sh ${{ secrets.CLUSTER_USER }}:/g100/home/usertrain/${{ secrets.CLUSTER_ACCOUNT_USERNAME }}
+          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' scp -o StrictHostKeyChecking=no matrix_multiplication.sif job.sh matrixA.txt matrixB.txt ${{ secrets.CLUSTER_USER }}:/g100/home/usertrain/${{ secrets.CLUSTER_ACCOUNT_USERNAME }}
 
       - name: Run job.sh
         run: |
