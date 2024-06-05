@@ -1,5 +1,4 @@
 #include "matrix_multiplication.h"
-#include "matrix_mult.cpp"
 #include <iostream>
 #include <vector>
 #include <gtest/gtest.h>
@@ -311,37 +310,6 @@ TEST(TestDifferentBehavior, Error17NotPresent)
     ASSERT_EQ(C, expected) << "Matrix contains 17";
 }
 
-// The following test tries to multiply two random matrices 
-// It is a nice way to find the errors in this simple example, but in general it make no sense to do it, unless there is another way to obtein the correct result.
-
-TEST(MatrixMultiplicationTest, RandomMatrix)
-{
-    srand(time(NULL));
-    int rowsA = rand() % 25;
-    int colsA = rand() % 25;
-    std::vector<std::vector<int>> A(rowsA, std::vector<int>(colsA, 0));
-    std::vector<std::vector<int>> B(colsA, std::vector<int>(rowsA, 0));
-    std::vector<std::vector<int>> C(rowsA, std::vector<int>(rowsA, 0));
-    // std::vector<std::vector<int>> A = {
-    //     {0, 0},
-    //     {0, 0}};
-    // std::vector<std::vector<int>> B = {
-    //     {0, 0},
-    //     {0, 0}};
-    for (int i = 0; i < rowsA; i++)
-    {
-        for (int j = 0; j < colsA; j++)
-        {
-            A[i][j] = rand() % 25;
-            B[j][i] = rand() % 25;
-        }
-    }
-    multiplyMatrices(A, B, C, rowsA, colsA, rowsA);
-    std::vector<std::vector<int>> expected(rowsA, std::vector<int>(rowsA, 0));
-    multiplyMatricesWithoutErrors(A, B, expected, rowsA, colsA, rowsA);
-
-    ASSERT_EQ(C, expected) << "Matrix multiplication test failed! :((((";
-}
 
 // This test tries to check if the program has some protective way to block invalid vectors as matrix, like null vectors.
 // The segmentation fault means that it doesn't do any checks on the lenght.
