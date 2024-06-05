@@ -63,17 +63,18 @@ jobs:
 
       - name: Transfer output.txt and error.txt from cluster to runner
         run: |
-          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' scp -o StrictHostKeyChecking=no ${{ secrets.CLUSTER_USER }}:/g100/home/usertrain/${{ secrets.CLUSTER_ACCOUNT_USERNAME }}/output.txt ./output2.txt
-          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' scp -o StrictHostKeyChecking=no ${{ secrets.CLUSTER_USER }}:/g100/home/usertrain/${{ secrets.CLUSTER_ACCOUNT_USERNAME }}/error.txt ./error2.txt
+          sleep 10
+          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' scp -o StrictHostKeyChecking=no ${{ secrets.CLUSTER_USER }}:/g100/home/usertrain/${{ secrets.CLUSTER_ACCOUNT_USERNAME }}/output.txt ./output.txt
+          sshpass -p '${{ secrets.SSH_PRIVATE_KEY }}' scp -o StrictHostKeyChecking=no ${{ secrets.CLUSTER_USER }}:/g100/home/usertrain/${{ secrets.CLUSTER_ACCOUNT_USERNAME }}/error.txt ./error.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: output
-          path: output2.txt
+          path: output.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: error
-          path: error2.txt
+          path: error.txt
